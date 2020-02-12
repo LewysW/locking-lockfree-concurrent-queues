@@ -3,7 +3,6 @@
 
 int main(void) {
   CQueue<int> queue;
-
   queue.enqueue(17);
   queue.enqueue(12);
   queue.enqueue(46);
