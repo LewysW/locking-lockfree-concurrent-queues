@@ -1,7 +1,7 @@
-all: clean queue
+all: clean locking
 
-queue:
-	g++ main.cpp -o queue -std=c++17
+locking:
+	g++ locking.cpp -o locking -std=c++17
 
 clean: 
-	rm -rf queue *.o
+	rm -rf locking *.o

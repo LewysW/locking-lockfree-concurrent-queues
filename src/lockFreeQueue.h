@@ -1,6 +1,5 @@
-#ifndef LOCKING_QUEUE_H
-#define LOCKING_QUEUE_H
-#include <mutex>
+#ifndef LOCK_FREE_QUEUE_H
+#define LOCK_FREE_QUEUE_H
 #include "doublyLinkedList/doublyLinkedList.h"
 #include <iostream>
 
@@ -8,7 +7,6 @@ template <class T>
 class CQueue {
 private:
   DoublyLinkedList<T> data;
-  std::mutex data_mutex;
 
 public:
   CQueue() = default;
@@ -18,13 +16,11 @@ public:
 
 template <class T>
 void CQueue<T>::enqueue(T payload) {
-  std::lock_guard<std::mutex> data_guard(data_mutex);
   data.emplaceBack(payload);
 }
 
 template <class T>
 T CQueue<T>::dequeue() {
-  std::lock_guard<std::mutex> data_guard(data_mutex);
   T element = data.getRoot()->element;
   data.remove(data.getRoot());
   return element;
