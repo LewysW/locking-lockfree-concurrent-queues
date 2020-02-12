@@ -1,6 +1,7 @@
 #ifndef DOUBLY_LINKED_LIST_H
 #define DOUBLY_LINKED_LIST_H
 #include "doublyLinkedListNode.h"
+#include <stdlib.h>
 
 template <class T>
 class DoublyLinkedList {
@@ -24,9 +25,6 @@ public:
 
     DoublyLinkedListNode<T>* getTail();
 };
-
-#include "doublyLinkedList.h"
-#include <stdlib.h>
 
 template <class T>
 void DoublyLinkedList<T>::insertAfter(T element, DoublyLinkedListNode<T>* predecessor) {
