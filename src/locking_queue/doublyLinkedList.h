@@ -11,11 +11,9 @@ private:
     int currentSize = 0;
 
 public:
-    void insertAfter(T element, DoublyLinkedListNode<T>* predecessor);
+    void insert(T element);
 
-    void emplaceBack(T element);
-
-    void remove(DoublyLinkedListNode<T>* node);
+    void remove();
     
     int size();
     
@@ -27,55 +25,33 @@ public:
 };
 
 template <class T>
-void DoublyLinkedList<T>::insertAfter(T element, DoublyLinkedListNode<T>* predecessor) {
-    if (currentSize == 0) {
-            tail = (DoublyLinkedListNode<T>*) malloc(sizeof(DoublyLinkedListNode<T>));
-            *tail = DoublyLinkedListNode(element, (DoublyLinkedListNode<T>*) NULL, (DoublyLinkedListNode<T>*) NULL);
-            root = tail;
-        }
-        else {
-            DoublyLinkedListNode<T>* new_node = (DoublyLinkedListNode<T>*) malloc(sizeof(DoublyLinkedListNode<T>));
+void DoublyLinkedList<T>::insert(T element) {
+    //Creates new node pointer and gives it a value
+    DoublyLinkedListNode<T>* newNode = (DoublyLinkedListNode<T>*) malloc(sizeof(DoublyLinkedListNode<T>));
+    *newNode = DoublyLinkedListNode(element, (DoublyLinkedListNode<T>*) NULL, (DoublyLinkedListNode<T>*) NULL);
 
-            //If root node
-            if (predecessor == NULL) {
-                //Set previous to NULL and next to current root
-                *new_node = DoublyLinkedListNode(element, (DoublyLinkedListNode<T>*) root, (DoublyLinkedListNode<T>*) NULL);
-                //Sets root to new_node
-                root = new_node;
-            //Otherwise if any other node
-            } else {
-                *new_node = DoublyLinkedListNode(element, predecessor->next, predecessor);
-                predecessor->next = new_node;
+    newNode->previous = tail;
 
-                //If next is NULL, new_node becomes tail node
-                if (new_node->next == NULL) tail = new_node;
-            }
-        }
+    if (tail != NULL) {
+        tail->next = newNode;
+    } else {
+        root = newNode;
+    }
+    
+    tail = newNode;
 
-        currentSize++;
+    currentSize++;
 }
 
 template <class T>
-void DoublyLinkedList<T>::emplaceBack(T element) {
-    insertAfter(element, getTail());
-}
-
-template <class T>
-void DoublyLinkedList<T>::remove(DoublyLinkedListNode<T>* node) {
-    if (currentSize == 1)
-            clear();
-        else {
-            if (node != root) node->previous->next = node->next;
-
-            if (node != tail) node->next->previous = node->previous;
-
-            if (root == node) root = node->next;
-
-            if (tail == node) tail = node->previous;
-
-            free(node);
-            currentSize--;
-        }
+void DoublyLinkedList<T>::remove() {
+    if (currentSize > 0) {
+        DoublyLinkedListNode<T>* temp = root;
+        if (root->next != NULL)
+            root = root->next;
+        free(temp);
+        currentSize--;
+    }
 }
 
 template <class T>
