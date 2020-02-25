@@ -9,7 +9,6 @@ class DoublyLinkedList {
 private:
     DoublyLinkedListNode<T>* root = NULL;
     DoublyLinkedListNode<T>* tail = NULL;
-    int currentSize = 0;
 
 public:
     void insert(T element);
@@ -39,9 +38,7 @@ void DoublyLinkedList<T>::insert(T element) {
 template <class T>
 void DoublyLinkedList<T>::remove() {
     if (root != NULL) {
-        DoublyLinkedListNode<T>* temp = root;
-        if (root->next != NULL)
-            root = root->next;
+        root = root->next;
     }
 }
 

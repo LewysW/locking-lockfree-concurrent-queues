@@ -3,14 +3,13 @@
 #include "linkedListNode.h"
 #include <stdlib.h>
 #include <atomic>
+#include <iostream>
 
 template <class T>
 class DoublyLinkedList {
 private:
     std::atomic<DoublyLinkedListNode<T>*> root = NULL;
     std::atomic<DoublyLinkedListNode<T>*> tail = NULL;
-
-    int currentSize = 0;
 
 public:
     void insert(T element);
@@ -53,16 +52,17 @@ void DoublyLinkedList<T>::insert(T element) {
 
 template <class T>
 void DoublyLinkedList<T>::remove() {
+    DoublyLinkedListNode<T>* temp = root.load(std::memory_order_relaxed);
     if (root != NULL) {
-        DoublyLinkedListNode<T>* temp = root.load(std::memory_order_relaxed);
-        if (temp != NULL) {
-            //Sets root to root->next to remove the front node
-            while(!std::atomic_compare_exchange_weak_explicit(
-                                &root,
-                                &temp,
-                                temp->next,
-                                std::memory_order_release,
-                                std::memory_order_relaxed));
+        //Sets root to root->next to remove the front node
+        if (temp->next != NULL) {
+
+        while(!std::atomic_compare_exchange_weak_explicit(
+                            &root,
+                            &temp,
+                            temp->next,
+                            std::memory_order_release,
+                            std::memory_order_relaxed));
         }
     }
 }
