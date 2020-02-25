@@ -25,7 +25,6 @@ void DoublyLinkedList<T>::insert(T element) {
     //Creates new node pointer and gives it a value
     DoublyLinkedListNode<T>* newNode = new DoublyLinkedListNode<T>(element, (DoublyLinkedListNode<T>*) NULL);
 
-    //Restructure so that there is a single CAS to update tail
     if (tail != NULL) {
         tail->next = newNode;
     } else {
@@ -39,6 +38,10 @@ template <class T>
 void DoublyLinkedList<T>::remove() {
     if (root != NULL) {
         root = root->next;
+
+        if (root == NULL) {
+            tail = NULL;
+        }
     }
 }
 

@@ -11,17 +11,17 @@ int main(void) {
   std::cout << queue.dequeue() << std::endl;
   std::cout << queue.dequeue() << std::endl;
 
-   queue.enqueue(4);
-   queue.enqueue(5);
-   queue.enqueue(6);
+  queue.enqueue(4);
+  queue.enqueue(5);
+  queue.enqueue(6);
 
-   std::cout << queue.dequeue() << std::endl;
-  // std::cout << queue.dequeue() << std::endl;
-  //
-  // queue.enqueue(7);
-  // queue.enqueue(8);
-  //
-  // std::cout << queue.dequeue() << std::endl;
-  // std::cout << queue.dequeue() << std::endl;
-  // std::cout << queue.dequeue() << std::endl;
+  std::cout << queue.dequeue() << std::endl;
+  std::cout << queue.dequeue() << std::endl;
+
+  queue.enqueue(7);
+  queue.enqueue(8);
+
+  std::cout << queue.dequeue() << std::endl;
+  std::cout << queue.dequeue() << std::endl;
+  std::cout << queue.dequeue() << std::endl;
 }

@@ -52,17 +52,19 @@ void DoublyLinkedList<T>::insert(T element) {
 
 template <class T>
 void DoublyLinkedList<T>::remove() {
-    DoublyLinkedListNode<T>* temp = root.load(std::memory_order_relaxed);
-    if (root != NULL) {
+    DoublyLinkedListNode<T>* tempRoot = root.load(std::memory_order_relaxed);
+    DoublyLinkedListNode<T>* tempTail = tail.load(std::memory_order_relaxed);
+    if (tempRoot != NULL) {
         //Sets root to root->next to remove the front node
-        if (temp->next != NULL) {
-
         while(!std::atomic_compare_exchange_weak_explicit(
                             &root,
-                            &temp,
-                            temp->next,
+                            &tempRoot,
+                            tempRoot->next,
                             std::memory_order_release,
                             std::memory_order_relaxed));
+
+        if (tempRoot->next == NULL) {
+            tail.store(NULL);
         }
     }
 }
