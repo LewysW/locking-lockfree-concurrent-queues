@@ -8,12 +8,10 @@ class DoublyLinkedListNode {
 public:
     T element;
     DoublyLinkedListNode<T>* next;
-    DoublyLinkedListNode<T>* previous;
 
-    DoublyLinkedListNode(T element, DoublyLinkedListNode<T>* next, DoublyLinkedListNode<T>* previous) :
+    DoublyLinkedListNode(T element, DoublyLinkedListNode<T>* next) :
         element(element),
-        next(next),
-        previous(previous)
+        next(next)
     {
     }
 };

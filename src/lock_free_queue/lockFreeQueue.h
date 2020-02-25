@@ -1,6 +1,6 @@
 #ifndef LOCK_FREE_QUEUE_H
 #define LOCK_FREE_QUEUE_H
-#include "../doublyLinkedList.h"
+#include "linkedList.h"
 #include <iostream>
 
 template <class T>
