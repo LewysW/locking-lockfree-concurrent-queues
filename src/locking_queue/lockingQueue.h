@@ -1,7 +1,7 @@
 #ifndef LOCKING_QUEUE_H
 #define LOCKING_QUEUE_H
 #include <mutex>
-#include "doublyLinkedList.h"
+#include "../doublyLinkedList.h"
 #include <iostream>
 
 template <class T>

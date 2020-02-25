@@ -14,10 +14,8 @@ public:
     void insert(T element);
 
     void remove();
-    
+
     int size();
-    
-    void clear();
 
     DoublyLinkedListNode<T>* getRoot();
 
@@ -30,16 +28,20 @@ void DoublyLinkedList<T>::insert(T element) {
     DoublyLinkedListNode<T>* newNode = (DoublyLinkedListNode<T>*) malloc(sizeof(DoublyLinkedListNode<T>));
     *newNode = DoublyLinkedListNode(element, (DoublyLinkedListNode<T>*) NULL, (DoublyLinkedListNode<T>*) NULL);
 
+    //TODO - CAS for value in tail to newNode->previous
     newNode->previous = tail;
 
+    //Restructure so that there is a single CAS to update tail
     if (tail != NULL) {
         tail->next = newNode;
     } else {
+        //CAS to update root
         root = newNode;
     }
-    
+
     tail = newNode;
 
+    //CAS to update currentSize
     currentSize++;
 }
 
@@ -57,12 +59,6 @@ void DoublyLinkedList<T>::remove() {
 template <class T>
 int DoublyLinkedList<T>::size() {
     return currentSize;
-}
-
-template <class T>
-void DoublyLinkedList<T>::clear() {
-    root = tail = NULL;
-    currentSize = 0;
 }
 
 template <class T>
