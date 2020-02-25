@@ -64,7 +64,14 @@ void DoublyLinkedList<T>::remove() {
                             std::memory_order_relaxed));
 
         if (tempRoot->next == NULL) {
-            tail.store(NULL);
+            DoublyLinkedListNode<T>* temp = NULL;
+
+            while(!std::atomic_compare_exchange_weak_explicit(
+                                &tail,
+                                &tempTail,
+                                temp,
+                                std::memory_order_release,
+                                std::memory_order_relaxed));
         }
     }
 }
