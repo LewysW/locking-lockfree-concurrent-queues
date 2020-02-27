@@ -6,7 +6,7 @@
 template <class T>
 class CQueue {
 private:
-  DoublyLinkedList<T> data;
+  LinkedList<T> data;
 
 public:
   CQueue() = default;
@@ -21,9 +21,14 @@ void CQueue<T>::enqueue(T payload) {
 
 template <class T>
 T CQueue<T>::dequeue() {
-  T element = data.getRoot()->element;
-  data.remove();
-  return element;
+  LinkedListNode<T>* temp = data.getRoot();
+
+  if (temp == NULL) {
+    return NULL;
+  } else {
+    data.remove();
+    return temp->element;
+  }
 }
 
 #endif

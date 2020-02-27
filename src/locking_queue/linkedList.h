@@ -1,29 +1,29 @@
-#ifndef DOUBLY_LINKED_LIST_H
-#define DOUBLY_LINKED_LIST_H
+#ifndef LINKED_LIST_H
+#define LINKED_LIST_H
 #include "linkedListNode.h"
 #include <stdlib.h>
 #include <atomic>
 
 template <class T>
-class DoublyLinkedList {
+class LinkedList {
 private:
-    DoublyLinkedListNode<T>* root = NULL;
-    DoublyLinkedListNode<T>* tail = NULL;
+    LinkedListNode<T>* root = NULL;
+    LinkedListNode<T>* tail = NULL;
 
 public:
     void insert(T element);
 
     void remove();
 
-    DoublyLinkedListNode<T>* getRoot();
+    LinkedListNode<T>* getRoot();
 
-    DoublyLinkedListNode<T>* getTail();
+    LinkedListNode<T>* getTail();
 };
 
 template <class T>
-void DoublyLinkedList<T>::insert(T element) {
+void LinkedList<T>::insert(T element) {
     //Creates new node pointer and gives it a value
-    DoublyLinkedListNode<T>* newNode = new DoublyLinkedListNode<T>(element, (DoublyLinkedListNode<T>*) NULL);
+    LinkedListNode<T>* newNode = new LinkedListNode<T>(element, (LinkedListNode<T>*) NULL);
 
     if (tail != NULL) {
         tail->next = newNode;
@@ -35,7 +35,7 @@ void DoublyLinkedList<T>::insert(T element) {
 }
 
 template <class T>
-void DoublyLinkedList<T>::remove() {
+void LinkedList<T>::remove() {
     if (root != NULL) {
         root = root->next;
 
@@ -46,12 +46,12 @@ void DoublyLinkedList<T>::remove() {
 }
 
 template <class T>
-DoublyLinkedListNode<T>* DoublyLinkedList<T>::getRoot() {
+LinkedListNode<T>* LinkedList<T>::getRoot() {
     return root;
 }
 
 template <class T>
-DoublyLinkedListNode<T>* DoublyLinkedList<T>::getTail() {
+LinkedListNode<T>* LinkedList<T>::getTail() {
     return tail;
 }
 

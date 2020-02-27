@@ -1,59 +1,101 @@
-#ifndef DOUBLY_LINKED_LIST_H
-#define DOUBLY_LINKED_LIST_H
+#ifndef LINKED_LIST_H
+#define LINKED_LIST_H
 #include "linkedListNode.h"
 #include <stdlib.h>
 #include <atomic>
 #include <iostream>
 
 template <class T>
-class DoublyLinkedList {
+class LinkedList {
 private:
-    std::atomic<DoublyLinkedListNode<T>*> root = NULL;
-    std::atomic<DoublyLinkedListNode<T>*> tail = NULL;
+    std::atomic<LinkedListNode<T>*> root = NULL;
+    std::atomic<LinkedListNode<T>*> tail = NULL;
 
 public:
     void insert(T element);
 
     void remove();
 
-    DoublyLinkedListNode<T>* getRoot();
+    LinkedListNode<T>* getRoot();
 
-    DoublyLinkedListNode<T>* getTail();
+    LinkedListNode<T>* getTail();
 };
 
 template <class T>
-void DoublyLinkedList<T>::insert(T element) {
+void LinkedList<T>::insert(T element) {
     //Creates new node pointer and gives it a value
-    DoublyLinkedListNode<T>* newNode = new DoublyLinkedListNode<T>(element, (DoublyLinkedListNode<T>*) NULL);
-    DoublyLinkedListNode<T>* tailTemp = tail.load(std::memory_order_relaxed);
-    DoublyLinkedListNode<T>* rootTemp = root.load(std::memory_order_relaxed);
+    LinkedListNode<T>* newNode = new LinkedListNode<T>(element, (LinkedListNode<T>*) NULL);
+    LinkedListNode<T>* tailTemp;
+    
+    //Keep trying until insert successful
+    while (true) {
+        tailTemp = tail.load(std::memory_order_relaxed);
+        LinkedListNode<T>* rootTemp = root.load(std::memory_order_relaxed);
 
-    //Restructure so that there is a single CAS to update tail
-    if (tailTemp != NULL) {
-        //Sets tail next pointer to newNode
-        tailTemp->next = newNode;
-    } else {
-        //Sets root to newNode
-        while(!std::atomic_compare_exchange_weak_explicit(
-                            &root,
-                            &rootTemp,
-                            newNode,
-                            std::memory_order_release,
-                            std::memory_order_relaxed));
+        //If at least one item in list (to avoid segfault on tail->next)
+        if (tailTemp != NULL) {
+            //Sets tail next pointer to newNode
+            LinkedListNode<T>* next = tailTemp->next.load(std::memory_order_relaxed);
+
+            //If next is available to be updated with new node
+            if (next == NULL) {
+                //Update end of list and break
+                if (std::atomic_compare_exchange_weak_explicit(
+                    &tailTemp->next,
+                    &next,
+                    newNode,
+                    std::memory_order_release,
+                    std::memory_order_relaxed)) {
+                        break;
+                }
+            //Otherwise point tail pointer to new value inserted by some other thread    
+            } else {
+                //If other thread inserted between this thread's operation then update tail to next
+                std::atomic_compare_exchange_weak_explicit(
+                    &tail,
+                    &tailTemp,
+                    next,
+                    std::memory_order_release,
+                    std::memory_order_relaxed);
+            }
+        //Nothing in list    
+        } else {
+            //If front of list is pointing to nothing
+            if (rootTemp == NULL) {
+                //Point root to new node
+                if (std::atomic_compare_exchange_weak_explicit(
+                    &root,
+                    &rootTemp,
+                    newNode,
+                    std::memory_order_release,
+                    std::memory_order_relaxed)) {
+                        break;
+                }
+            //Otherwise other thread has updated root in the interim, need to update our tail    
+            } else {
+                std::atomic_compare_exchange_weak_explicit(
+                    &tail,
+                    &tailTemp,
+                    root,
+                    std::memory_order_release,
+                    std::memory_order_relaxed);
+            }
+        }
     }
 
-    while(!std::atomic_compare_exchange_weak_explicit(
-                        &tail,
-                        &tailTemp,
-                        newNode,
-                        std::memory_order_release,
-                        std::memory_order_relaxed));
+    std::atomic_compare_exchange_weak_explicit(
+            &tail,
+            &tailTemp,
+            newNode,
+            std::memory_order_release,
+            std::memory_order_relaxed);
+
 }
 
 template <class T>
-void DoublyLinkedList<T>::remove() {
-    DoublyLinkedListNode<T>* tempRoot = root.load(std::memory_order_relaxed);
-    DoublyLinkedListNode<T>* tempTail = tail.load(std::memory_order_relaxed);
+void LinkedList<T>::remove() {
+    LinkedListNode<T>* tempRoot = root.load(std::memory_order_relaxed);
+    LinkedListNode<T>* tempTail = tail.load(std::memory_order_relaxed);
     if (tempRoot != NULL) {
         //Sets root to root->next to remove the front node
         while(!std::atomic_compare_exchange_weak_explicit(
@@ -64,7 +106,7 @@ void DoublyLinkedList<T>::remove() {
                             std::memory_order_relaxed));
 
         if (tempRoot->next == NULL) {
-            DoublyLinkedListNode<T>* temp = NULL;
+            LinkedListNode<T>* temp = NULL;
 
             while(!std::atomic_compare_exchange_weak_explicit(
                                 &tail,
@@ -77,12 +119,12 @@ void DoublyLinkedList<T>::remove() {
 }
 
 template <class T>
-DoublyLinkedListNode<T>* DoublyLinkedList<T>::getRoot() {
+LinkedListNode<T>* LinkedList<T>::getRoot() {
     return root;
 }
 
 template <class T>
-DoublyLinkedListNode<T>* DoublyLinkedList<T>::getTail() {
+LinkedListNode<T>* LinkedList<T>::getTail() {
     return tail;
 }
 

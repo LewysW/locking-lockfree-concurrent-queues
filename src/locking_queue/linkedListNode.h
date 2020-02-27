@@ -1,15 +1,15 @@
-#ifndef DOUBLY_LINKED_LIST_NODE_H
-#define DOUBLY_LINKED_LIST_NODE_H
+#ifndef LINKED_LIST_NODE_H
+#define LINKED_LIST_NODE_H
 #include <stdint.h>
 #include <stddef.h>
 
 template <class T>
-class DoublyLinkedListNode {
+class LinkedListNode {
 public:
     T element;
-    DoublyLinkedListNode<T>* next;
+    LinkedListNode<T>* next;
 
-    DoublyLinkedListNode(T element, DoublyLinkedListNode<T>* next) :
+    LinkedListNode(T element, LinkedListNode<T>* next) :
         element(element),
         next(next)
     {

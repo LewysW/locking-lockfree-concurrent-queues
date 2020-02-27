@@ -7,7 +7,7 @@
 template <class T>
 class CQueue {
 private:
-  DoublyLinkedList<T> data;
+  LinkedList<T> data;
   std::mutex data_mutex;
 
 public:
