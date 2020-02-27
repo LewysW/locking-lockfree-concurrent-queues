@@ -93,7 +93,7 @@ void LinkedList<T>::insert(T element) {
 }
 
 template <class T>
-void LinkedList<T>::remove() {
+T LinkedList<T>::remove() {
     LinkedListNode<T>* tempRoot = root.load(std::memory_order_relaxed);
     LinkedListNode<T>* tempTail = tail.load(std::memory_order_relaxed);
     if (tempRoot != NULL) {
@@ -116,6 +116,10 @@ void LinkedList<T>::remove() {
                                 std::memory_order_relaxed));
         }
     }
+
+    //TODO - ensure thread blocks if nothing to remove
+    //Make sure concurrent code is correct
+    //Return value from here to dequeue function
 }
 
 template <class T>
