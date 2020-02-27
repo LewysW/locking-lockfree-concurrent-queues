@@ -21,14 +21,7 @@ void CQueue<T>::enqueue(T payload) {
 
 template <class T>
 T CQueue<T>::dequeue() {
-  LinkedListNode<T>* temp = data.getRoot();
-
-  if (temp == NULL) {
-    return NULL;
-  } else {
-    data.remove();
-    return temp->element;
-  }
+  return data.remove();
 }
 
 #endif
