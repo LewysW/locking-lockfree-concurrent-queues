@@ -1,27 +1,44 @@
 #include "lockFreeQueue.h"
 #include <iostream>
+#include <thread>
+#include <set>
+CQueue<int> in_queue;
+CQueue<int> out_queue;
+std::set<int> resultSet;
+
+void enqueueDequeueTest(int start, int end);
 
 int main(void) {
-  CQueue<int> queue;
-  queue.enqueue(17);
-  queue.enqueue(46);
-  queue.enqueue(12);
+  std::thread t1(enqueueDequeueTest, 1, 1000);
+  std::thread t2(enqueueDequeueTest, 1001, 2000);
+  std::thread t3(enqueueDequeueTest, 2001, 3000);
+  std::thread t4(enqueueDequeueTest, 3001, 4000);
+  std::thread t5(enqueueDequeueTest, 4001, 5000);
 
-  std::cout << queue.dequeue() << std::endl;
-  std::cout << queue.dequeue() << std::endl;
-  std::cout << queue.dequeue() << std::endl;
+  t1.join();
+  t2.join();
+  t3.join();
+  t4.join();
+  t5.join();
 
-  queue.enqueue(4);
-  queue.enqueue(5);
-  queue.enqueue(6);
+  for (int i = 1; i <= 5000; i++) {
+    resultSet.insert(out_queue.dequeue());
+  }
 
-  std::cout << queue.dequeue() << std::endl;
-  std::cout << queue.dequeue() << std::endl;
+  std::cout << resultSet.size() << std::endl;
 
-  queue.enqueue(7);
-  queue.enqueue(8);
-
-  std::cout << queue.dequeue() << std::endl;
-  std::cout << queue.dequeue() << std::endl;
-  std::cout << queue.dequeue() << std::endl;
+  for (auto i = resultSet.begin(); i != resultSet.end(); i++) {
+    std::cout << *i << std::endl;
+  }
 }
+
+void enqueueDequeueTest(int start, int end) {
+  for (int i = start; i <= end; i++) {
+    in_queue.enqueue(i);
+  }
+
+  for (int i = start; i <= end; i++) {
+     out_queue.enqueue(in_queue.dequeue());
+  }
+}
+

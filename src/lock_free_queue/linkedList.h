@@ -97,11 +97,6 @@ T LinkedList<T>::remove() {
     LinkedListNode<T>* tempRoot = root.load(std::memory_order_relaxed);
     LinkedListNode<T>* tempTail = tail.load(std::memory_order_relaxed);
 
-    //If queue empty, then dequeue should fail
-    // if (tempRoot == NULL) {
-    //     std::cout << "Dequeue Error: Queue empty!" << std::endl;
-    //     exit(1);
-    // } else {
     while (true) {
         //If dequeue
         if (tempRoot != NULL && std::atomic_compare_exchange_weak_explicit(
