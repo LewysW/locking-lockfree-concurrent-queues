@@ -2,42 +2,65 @@
 #include <iostream>
 #include <thread>
 #include <set>
+#include <vector>
+
+#define MAX_WORKLOAD 100000
+#define INITIAL_WORKLOAD 1000
+#define INCREMENT 1000
+#define NUM_THREADS 100
+
 CQueue<int> in_queue;
 CQueue<int> out_queue;
 std::set<int> resultSet;
+std::vector<std::thread> threads;
 
 void enqueueDequeueTest(int start, int end);
 
 int main(void) {
-  std::thread t1(enqueueDequeueTest, 1, 1000);
-  std::thread t2(enqueueDequeueTest, 1001, 2000);
-  std::thread t3(enqueueDequeueTest, 2001, 3000);
-  std::thread t4(enqueueDequeueTest, 3001, 4000);
-  std::thread t5(enqueueDequeueTest, 4001, 5000);
+  //Runs tests
+  for (int workload = INITIAL_WORKLOAD; workload <= MAX_WORKLOAD; workload += INCREMENT) {
+    int workShare = workload / NUM_THREADS;
+    int start = 1;
 
-  t1.join();
-  t2.join();
-  t3.join();
-  t4.join();
-  t5.join();
+    //Runs threads, each enqueuing and dequeuing integers for the current test
+    for (int threadNum = 1; threadNum <= NUM_THREADS; threadNum++) {
+      //std::cout << "START: " << start << " END: " << end << " Workload: " << workload << std::endl;
+      threads.push_back(std::thread(enqueueDequeueTest, start, start + workShare));
+      
+      start = start + workShare;
+    }
 
-  for (int i = 1; i <= 5000; i++) {
-    resultSet.insert(out_queue.dequeue());
-  }
+    //Joins each thread after they finish
+    for (int threadNum = 0; threadNum < NUM_THREADS; threadNum++) {
+      threads[threadNum].join();
+    }
 
-  std::cout << resultSet.size() << std::endl;
+    //Places all of the items into a set to verify the number of unique integers
+    for (int i = 1; i <= workload; i++) {
+      //std::cout << "Inserting " << i <<"th element into set" << std::endl;
+      resultSet.insert(out_queue.dequeue());
+    }
 
-  for (auto i = resultSet.begin(); i != resultSet.end(); i++) {
-    std::cout << *i << std::endl;
+    //Displays the size of the set
+    std::cout << resultSet.size() << std::endl;
+
+    //Prints each number in the set
+    for (auto i = resultSet.begin(); i != resultSet.end(); i++) {
+      std::cout << *i << std::endl;
+    }
+
+    threads.clear();
+    resultSet.clear();
   }
 }
 
 void enqueueDequeueTest(int start, int end) {
-  for (int i = start; i <= end; i++) {
+  for (int i = start; i < end; i++) {
+    std::cout << "Inserting: " << i << std::endl;
     in_queue.enqueue(i);
   }
 
-  for (int i = start; i <= end; i++) {
+  for (int i = start; i < end; i++) {
      out_queue.enqueue(in_queue.dequeue());
   }
 }
