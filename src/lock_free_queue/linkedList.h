@@ -14,7 +14,7 @@ private:
 public:
     void insert(T element);
 
-    void remove();
+    T remove();
 
     LinkedListNode<T>* getRoot();
 
@@ -96,30 +96,39 @@ template <class T>
 T LinkedList<T>::remove() {
     LinkedListNode<T>* tempRoot = root.load(std::memory_order_relaxed);
     LinkedListNode<T>* tempTail = tail.load(std::memory_order_relaxed);
-    if (tempRoot != NULL) {
-        //Sets root to root->next to remove the front node
-        while(!std::atomic_compare_exchange_weak_explicit(
-                            &root,
-                            &tempRoot,
-                            tempRoot->next,
-                            std::memory_order_release,
-                            std::memory_order_relaxed));
 
-        if (tempRoot->next == NULL) {
-            LinkedListNode<T>* temp = NULL;
+    //If queue empty, then dequeue should fail
+    // if (tempRoot == NULL) {
+    //     std::cout << "Dequeue Error: Queue empty!" << std::endl;
+    //     exit(1);
+    // } else {
+    while (true) {
+        //If dequeue
+        if (tempRoot != NULL && std::atomic_compare_exchange_weak_explicit(
+            &root,
+            &tempRoot,
+            tempRoot->next,
+            std::memory_order_release,
+            std::memory_order_relaxed)) {
+                LinkedListNode<T>* tempNext = tempRoot->next.load(std::memory_order_relaxed);
+                
+                if (tempNext == NULL) {
+                    std::atomic_compare_exchange_weak_explicit(
+                        &tail,
+                        &tempTail,
+                        tempNext,
+                        std::memory_order_release,
+                        std::memory_order_relaxed);
+                }
 
-            while(!std::atomic_compare_exchange_weak_explicit(
-                                &tail,
-                                &tempTail,
-                                temp,
-                                std::memory_order_release,
-                                std::memory_order_relaxed));
-        }
+                break;
+            }
+
+        tempRoot = root.load(std::memory_order_relaxed);
+        tempTail = tail.load(std::memory_order_relaxed);
     }
 
-    //TODO - ensure thread blocks if nothing to remove
-    //Make sure concurrent code is correct
-    //Return value from here to dequeue function
+    return tempRoot->element;
 }
 
 template <class T>

@@ -54,6 +54,12 @@
     "memory_resource": "cpp",
     "numeric": "cpp",
     "random": "cpp",
-    "string_view": "cpp"
+    "string_view": "cpp",
+    "strstream": "cpp",
+    "bitset": "cpp",
+    "iomanip": "cpp",
+    "cfenv": "cpp",
+    "cinttypes": "cpp",
+    "typeindex": "cpp"
   }
 }
