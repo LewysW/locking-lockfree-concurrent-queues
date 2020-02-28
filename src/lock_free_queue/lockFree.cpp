@@ -5,9 +5,9 @@
 #include <vector>
 
 #define MAX_WORKLOAD 100000
-#define INITIAL_WORKLOAD 1000
+#define INITIAL_WORKLOAD 10000
 #define INCREMENT 1000
-#define NUM_THREADS 100
+#define NUM_THREADS 1000
 
 CQueue<int> in_queue;
 CQueue<int> out_queue;
@@ -56,12 +56,16 @@ int main(void) {
 
 void enqueueDequeueTest(int start, int end) {
   for (int i = start; i < end; i++) {
-    std::cout << "Inserting: " << i << std::endl;
     in_queue.enqueue(i);
   }
 
   for (int i = start; i < end; i++) {
-     out_queue.enqueue(in_queue.dequeue());
+    try {
+      out_queue.enqueue(in_queue.dequeue());
+    } catch (std::exception& e) {
+      //Resets i to try dequeue again
+      i--;
+    }
   }
 }
 

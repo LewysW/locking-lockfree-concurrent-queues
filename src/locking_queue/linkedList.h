@@ -25,13 +25,12 @@ void LinkedList<T>::insert(T element) {
     //Creates new node pointer and gives it a value
     LinkedListNode<T>* newNode = new LinkedListNode<T>(element, (LinkedListNode<T>*) NULL);
 
-    if (tail != NULL) {
-        tail->next = newNode;
+    if (tail == NULL) {
+        root = tail = newNode;
     } else {
-        root = newNode;
+        tail->next = newNode;
+        tail = newNode;
     }
-
-    tail = newNode;
 }
 
 template <class T>

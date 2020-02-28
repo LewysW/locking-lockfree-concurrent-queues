@@ -92,13 +92,16 @@ void LinkedList<T>::insert(T element) {
 
 }
 
+//TODO - update algorithm to use that of saved page
 template <class T>
 T LinkedList<T>::remove() {
     LinkedListNode<T>* tempRoot = root.load(std::memory_order_relaxed);
     LinkedListNode<T>* tempTail = tail.load(std::memory_order_relaxed);
 
+    if (tempRoot == NULL) throw std::exception();
+
     while (true) {
-        //If dequeue
+        //If dequeue is successful
         if (tempRoot != NULL && std::atomic_compare_exchange_weak_explicit(
             &root,
             &tempRoot,
