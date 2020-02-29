@@ -29,7 +29,7 @@ public:
 
 template <class T>
 void LinkedList<T>::insert(T element) {
-    LinkedListNode<T>* newNode = new LinkedListNode<T>(element, (LinkedListNode<T>*) NULL)
+    LinkedListNode<T>* newNode = new LinkedListNode<T>(element, (LinkedListNode<T>*) NULL);
     LinkedListNode<T>* tempTail;
 
     while (true) {
@@ -49,7 +49,7 @@ void LinkedList<T>::insert(T element) {
             &tempTail,
             new_node,
             std::memory_order_release,
-            std::memory_order_relaxed)
+            std::memory_order_relaxed);
 }
 
 //TODO - update algorithm to use that of saved page
