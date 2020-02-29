@@ -37,7 +37,7 @@ void LinkedList<T>::insert(T element) {
         if (std::atomic_compare_exchange_weak_explicit(
             &tempTail->next,
             nullptr,
-            new_node,
+            newNode,
             std::memory_order_release,
             std::memory_order_relaxed)) {
                 break;
@@ -47,7 +47,7 @@ void LinkedList<T>::insert(T element) {
     std::atomic_compare_exchange_weak_explicit(
             &tail,
             &tempTail,
-            new_node,
+            newNode,
             std::memory_order_release,
             std::memory_order_relaxed);
 }
