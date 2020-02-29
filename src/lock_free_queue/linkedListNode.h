@@ -10,10 +10,10 @@ public:
     T element;
     std::atomic<LinkedListNode<T>*> next;
 
-    LinkedListNode(T element, LinkedListNode<T>* next) :
-        element(element),
-        next(next)
+    LinkedListNode(T element, LinkedListNode<T>* nextNode) :
+        element(element)
     {
+        std::atomic_init(&next, nextNode);
     }
 };
 #endif

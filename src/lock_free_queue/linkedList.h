@@ -16,7 +16,8 @@ private:
 public:
     LinkedList() {
         temp = new LinkedListNode<T>(0, (LinkedListNode<T>*) NULL);
-        head = tail = temp;
+        std::atomic_init(&head, temp);
+        std::atomic_init(&tail, temp);
     }
 
     void insert(T element);
@@ -32,13 +33,15 @@ template <class T>
 void LinkedList<T>::insert(T element) {
     LinkedListNode<T>* newNode = new LinkedListNode<T>(element, (LinkedListNode<T>*) NULL);
     LinkedListNode<T>* tempTail;
-    LinkedListNode<T>* empty = NULL;
+    LinkedListNode<T>* tempNext;
 
     while (true) {
         tempTail = tail.load(std::memory_order_relaxed);
+        tempNext = NULL;
+
         if (std::atomic_compare_exchange_weak_explicit(
             &tempTail->next,
-            &empty,
+            &tempNext,
             newNode,
             std::memory_order_release,
             std::memory_order_relaxed)) {
@@ -52,20 +55,33 @@ void LinkedList<T>::insert(T element) {
             newNode,
             std::memory_order_release,
             std::memory_order_relaxed);
+
 }
 
 //TODO - update algorithm to use that of saved page
 template <class T>
 T LinkedList<T>::remove() {
     LinkedListNode<T>* tempHead;
+    LinkedListNode<T>* tempTail;
     LinkedListNode<T>* tempNext;
     T element;
     while (true) {
         tempHead = head.load(std::memory_order_relaxed);
+        tempTail = tail.load(std::memory_order_relaxed);
+        //std::cout << "tempHead: " << tempHead << std::endl;
         tempNext = tempHead->next.load(std::memory_order_relaxed);
 
-        if (tempNext == NULL) {
-            throw std::exception();
+        if (tempTail == tempHead) {
+            if (tempNext == NULL) {
+                throw std::exception();
+            }
+
+            std::atomic_compare_exchange_weak_explicit(
+            &tail,
+            &tempTail,
+            tempNext,
+            std::memory_order_release,
+            std::memory_order_relaxed);
         } else {
             if (std::atomic_compare_exchange_weak_explicit(
             &head,
