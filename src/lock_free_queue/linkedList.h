@@ -14,7 +14,7 @@ private:
 
 public:
     LinkedList() {
-        temp = new LinkedListNode<T>(0, (LinkedListNode*) NULL);
+        temp = new LinkedListNode<T>(0, (LinkedListNode<T>*) NULL);
         head = tail = temp;
     }
 
@@ -29,7 +29,7 @@ public:
 
 template <class T>
 void LinkedList<T>::insert(T element) {
-    LinkedListNode<T>* newNode = new LinkedListNode<T>(element, (LinkedListNode*) NULL)
+    LinkedListNode<T>* newNode = new LinkedListNode<T>(element, (LinkedListNode<T>*) NULL)
     LinkedListNode<T>* tempTail;
 
     while (true) {
