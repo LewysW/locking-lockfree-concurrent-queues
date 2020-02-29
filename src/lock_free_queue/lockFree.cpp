@@ -43,11 +43,6 @@ int main(void) {
     //Displays the size of the set
     std::cout << resultSet.size() << std::endl;
 
-    //Prints each number in the set
-    // for (auto i = resultSet.begin(); i != resultSet.end(); i++) {
-    //   std::cout << *i << std::endl;
-    // }
-
     threads.clear();
     resultSet.clear();
   }
