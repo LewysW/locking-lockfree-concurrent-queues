@@ -58,7 +58,6 @@ void LinkedList<T>::insert(T element) {
 
 }
 
-//TODO - update algorithm to use that of saved page
 template <class T>
 T LinkedList<T>::remove() {
     LinkedListNode<T>* tempHead;
@@ -68,7 +67,6 @@ T LinkedList<T>::remove() {
     while (true) {
         tempHead = head.load(std::memory_order_relaxed);
         tempTail = tail.load(std::memory_order_relaxed);
-        //std::cout << "tempHead: " << tempHead << std::endl;
         tempNext = tempHead->next.load(std::memory_order_relaxed);
 
         if (tempTail == tempHead) {
