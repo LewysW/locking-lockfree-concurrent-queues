@@ -4,13 +4,14 @@
 #include <stdlib.h>
 #include <atomic>
 #include <iostream>
+#include <stdexcept>
 
 template <class T>
 class LinkedList {
 private:
     std::atomic<LinkedListNode<T>*> head;
     std::atomic<LinkedListNode<T>*> tail;
-    std::atomic<LinkedListNode<T>*> temp;
+    LinkedListNode<T>* temp;
 
 public:
     LinkedList() {
@@ -31,12 +32,13 @@ template <class T>
 void LinkedList<T>::insert(T element) {
     LinkedListNode<T>* newNode = new LinkedListNode<T>(element, (LinkedListNode<T>*) NULL);
     LinkedListNode<T>* tempTail;
+    LinkedListNode<T>* empty = NULL;
 
     while (true) {
         tempTail = tail.load(std::memory_order_relaxed);
         if (std::atomic_compare_exchange_weak_explicit(
             &tempTail->next,
-            nullptr,
+            &empty,
             newNode,
             std::memory_order_release,
             std::memory_order_relaxed)) {
@@ -56,17 +58,19 @@ void LinkedList<T>::insert(T element) {
 template <class T>
 T LinkedList<T>::remove() {
     LinkedListNode<T>* tempHead;
+    LinkedListNode<T>* tempNext;
     T element;
     while (true) {
         tempHead = head.load(std::memory_order_relaxed);
+        tempNext = tempHead->next.load(std::memory_order_relaxed);
 
-        if (tempHead->next == NULL) {
-            throw std::exception("Queue empty!");
+        if (tempNext == NULL) {
+            throw std::exception();
         } else {
             if (std::atomic_compare_exchange_weak_explicit(
             &head,
             &tempHead,
-            tempHead->next,
+            tempNext,
             std::memory_order_release,
             std::memory_order_relaxed)) {
                 break;
@@ -74,7 +78,7 @@ T LinkedList<T>::remove() {
         }
     }
 
-    return tempHead->next->element;
+    return tempNext->element;
 }
 
 template <class T>

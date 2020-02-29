@@ -9,7 +9,6 @@ private:
   LinkedList<T> data;
 
 public:
-  CQueue() noexcept = default;
   void enqueue(T payload);
   T dequeue();
 };
