@@ -8,130 +8,78 @@
 template <class T>
 class LinkedList {
 private:
-    std::atomic<LinkedListNode<T>*> root = NULL;
-    std::atomic<LinkedListNode<T>*> tail = NULL;
+    std::atomic<LinkedListNode<T>*> head;
+    std::atomic<LinkedListNode<T>*> tail;
+    std::atomic<LinkedListNode<T>*> temp;
 
 public:
+    LinkedList() {
+        temp = new LinkedListNode<T>(0, (LinkedListNode*) NULL);
+        head = tail = temp;
+    }
+
     void insert(T element);
 
     T remove();
 
-    LinkedListNode<T>* getRoot();
+    LinkedListNode<T>* getHead();
 
     LinkedListNode<T>* getTail();
 };
 
 template <class T>
 void LinkedList<T>::insert(T element) {
-    //Creates new node pointer and gives it a value
-    LinkedListNode<T>* newNode = new LinkedListNode<T>(element, (LinkedListNode<T>*) NULL);
-    LinkedListNode<T>* tailTemp;
-    
-    //Keep trying until insert successful
+    LinkedListNode<T>* newNode = new LinkedListNode<T>(element, (LinkedListNode*) NULL)
+    LinkedListNode<T>* tempTail;
+
     while (true) {
-        tailTemp = tail.load(std::memory_order_relaxed);
-        LinkedListNode<T>* rootTemp = root.load(std::memory_order_relaxed);
-
-        //If at least one item in list (to avoid segfault on tail->next)
-        if (tailTemp != NULL) {
-            //Sets tail next pointer to newNode
-            LinkedListNode<T>* next = tailTemp->next.load(std::memory_order_relaxed);
-
-            //If next is available to be updated with new node
-            if (next == NULL) {
-                //Update end of list and break
-                if (std::atomic_compare_exchange_weak_explicit(
-                    &tailTemp->next,
-                    &next,
-                    newNode,
-                    std::memory_order_release,
-                    std::memory_order_relaxed)) {
-                        break;
-                }
-            //Otherwise point tail pointer to new value inserted by some other thread    
-            } else {
-                //If other thread inserted between this thread's operation then update tail to next
-                std::atomic_compare_exchange_weak_explicit(
-                    &tail,
-                    &tailTemp,
-                    next,
-                    std::memory_order_release,
-                    std::memory_order_relaxed);
+        tempTail = tail.load(std::memory_order_relaxed);
+        if (std::atomic_compare_exchange_weak_explicit(
+            &tempTail->next,
+            nullptr,
+            new_node,
+            std::memory_order_release,
+            std::memory_order_relaxed)) {
+                break;
             }
-        //Nothing in list    
-        } else {
-            //If front of list is pointing to nothing
-            if (rootTemp == NULL) {
-                //Point root to new node
-                if (std::atomic_compare_exchange_weak_explicit(
-                    &root,
-                    &rootTemp,
-                    newNode,
-                    std::memory_order_release,
-                    std::memory_order_relaxed)) {
-                        break;
-                }
-            //Otherwise other thread has updated root in the interim, need to update our tail    
-            } else {
-                std::atomic_compare_exchange_weak_explicit(
-                    &tail,
-                    &tailTemp,
-                    root,
-                    std::memory_order_release,
-                    std::memory_order_relaxed);
-            }
-        }
     }
 
     std::atomic_compare_exchange_weak_explicit(
             &tail,
-            &tailTemp,
-            newNode,
+            &tempTail,
+            new_node,
             std::memory_order_release,
-            std::memory_order_relaxed);
-
+            std::memory_order_relaxed)
 }
 
 //TODO - update algorithm to use that of saved page
 template <class T>
 T LinkedList<T>::remove() {
-    LinkedListNode<T>* tempRoot = root.load(std::memory_order_relaxed);
-    LinkedListNode<T>* tempTail = tail.load(std::memory_order_relaxed);
-
-    if (tempRoot == NULL) throw std::exception();
-
+    LinkedListNode<T>* tempHead;
+    T element;
     while (true) {
-        //If dequeue is successful
-        if (tempRoot != NULL && std::atomic_compare_exchange_weak_explicit(
-            &root,
-            &tempRoot,
-            tempRoot->next,
+        tempHead = head.load(std::memory_order_relaxed);
+
+        if (tempHead->next == NULL) {
+            throw std::exception("Queue empty!");
+        } else {
+            if (std::atomic_compare_exchange_weak_explicit(
+            &head,
+            &tempHead,
+            tempHead->next,
             std::memory_order_release,
             std::memory_order_relaxed)) {
-                LinkedListNode<T>* tempNext = tempRoot->next.load(std::memory_order_relaxed);
-                
-                if (tempNext == NULL) {
-                    std::atomic_compare_exchange_weak_explicit(
-                        &tail,
-                        &tempTail,
-                        tempNext,
-                        std::memory_order_release,
-                        std::memory_order_relaxed);
-                }
-
                 break;
             }
-
-        tempRoot = root.load(std::memory_order_relaxed);
-        tempTail = tail.load(std::memory_order_relaxed);
+        }
     }
 
-    return tempRoot->element;
+    return tempHead->next->element;
 }
 
 template <class T>
-LinkedListNode<T>* LinkedList<T>::getRoot() {
-    return root;
+LinkedListNode<T>* LinkedList<T>::getHead() {
+    return head;
 }
 
 template <class T>
