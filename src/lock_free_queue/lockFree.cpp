@@ -60,12 +60,7 @@ void enqueueDequeueTest(int start, int end) {
   }
 
   for (int i = start; i < end; i++) {
-    try {
       out_queue.enqueue(in_queue.dequeue());
-    } catch (std::exception& e) {
-      //Resets i to try dequeue again
-      i--;
-    }
   }
 }
 

@@ -7,4 +7,4 @@ lockfree:
 	g++ lock_free_queue/lockFree.cpp -o lockfree -std=c++17 -pthread
 
 clean:
-	rm -rf locking lockfree *.o
+	rm -rf locking *.o lockfree
