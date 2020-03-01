@@ -14,8 +14,6 @@ private:
   std::mutex data_mutex;
 
 public:
-  CQueue() = default;
-
   //Enqueue function
   void enqueue(T payload);
 

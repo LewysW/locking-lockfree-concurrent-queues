@@ -34,7 +34,7 @@ public:
 };
 
 /**
- * Insert function of linked list
+ * Inserts a node at the tail of the linked list
  * @element - payload to assign node 
  * inserted at tail of linked list
  */
@@ -50,6 +50,10 @@ void LinkedList<T>::insert(T element) {
     tail = newNode;
 }
 
+/**
+ * Removes a node from the front of the linked list
+ * return - payload T of node at head->next
+**/
 template <class T>
 T LinkedList<T>::remove() {
     T element;
