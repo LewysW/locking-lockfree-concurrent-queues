@@ -23,10 +23,6 @@ public:
     void insert(T element);
 
     T remove();
-
-    LinkedListNode<T>* getHead();
-
-    LinkedListNode<T>* getTail();
 };
 
 template <class T>
@@ -93,16 +89,6 @@ T LinkedList<T>::remove() {
     }
 
     return tempNext->element;
-}
-
-template <class T>
-LinkedListNode<T>* LinkedList<T>::getHead() {
-    return head;
-}
-
-template <class T>
-LinkedListNode<T>* LinkedList<T>::getTail() {
-    return tail;
 }
 
 #endif
