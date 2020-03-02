@@ -12,7 +12,7 @@
 //Number of items to add for each test
 #define INCREMENT 1000
 //Number of threads enqueuing/dequeuing
-#define NUM_THREADS 1000
+#define NUM_THREADS 4
 
 //Queue which the threads enqueue to and dequeue from
 CQueue<int> in_queue;
