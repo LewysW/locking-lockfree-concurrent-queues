@@ -72,10 +72,20 @@ int main(void) {
         resultSet.insert(out_queue.dequeue());
       }
 
+      int out_queue_size = -1;
+
+      //Tries to dequeue from empty queue, 
+      //should always throw exception so size = 0
+      try {
+        out_queue.dequeue();
+      } catch (std::exception& e) {
+        out_queue_size = 0;
+      }
+
       //Writes size of set (for correctness and to indicate the current test) 
       //and time taken to run that test both to file and to stdout
       outputFile << resultSet.size() << ", " << duration.count() << std::endl;
-      std::cout << resultSet.size() << " - " << duration.count() << "ms" << std::endl;
+      std::cout <<  "size of out_queue: " << out_queue_size << ", size of result set: " << resultSet.size() << " - " << duration.count() << "ms" << std::endl;
 
       //Clears list of threads and resultSet to ensure all tests are carried out from the same point
       threads.clear();

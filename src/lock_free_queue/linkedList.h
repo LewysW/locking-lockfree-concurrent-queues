@@ -68,20 +68,20 @@ void LinkedList<T>::insert(T element) {
             std::memory_order_relaxed)) {
                 break;
             }
+
     }
 
     /**
      * CAS operation:
      * Updates tail of list to newNode.
      * Will always succeed for last thread which
-     * has updated tail->next because the first CAS
-     * will now fail for all other threads (meaning they
-     * will not break out of the loop) -
-     * i.e. tempTail->next will now equal newNode
+     * has updated tail->next because the first CAS\textbf{void insert(T element):}
+    \begin{verbatim}
      * so the comparison will fail as tempTail->next
      * is not equal to tempNext (NULL).
     **/
     std::atomic_compare_exchange_weak_explicit(
+
             &tail,
             &tempTail,
             newNode,
